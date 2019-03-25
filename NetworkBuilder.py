@@ -4,6 +4,8 @@ import arcpy
 from arcpy import env
 import config
 import os
+import datetime
+import time
 
 
 def select_network_by_mask(road, mask, plaza_mask, output):
@@ -59,7 +61,7 @@ def getTime(fcc, length):
         return ((float(length)/ 5280 )/ 25 )*3600
     else:
         return ((float(length)/ 5280 )/ 20 )*3600"""
-    codeblock2 = """Y
+    codeblock2 = """
 def getLevel(fcc):
     digit = int((fcc.strip())[1:])
     if digit < 20:
@@ -75,54 +77,90 @@ def getLevel(fcc):
     arcpy.CalculateField_management(road, "LEVEL", expression2, "PYTHON", codeblock2)
 
 
-def add_truck_route(road):
+def add_MDOT_truck_route(road, old_truck_route_list):
     """
     add truck route attribute to the road file 
     Input: 
     :road - str - the path of the road file 
+    :old_truck_route_list - str - the road name list **string**
     """
 
     arcpy.AddField_management(road, "OldTrkRt", "SHORT")
 
     codeblock = """
 def getOldTrkRt(FENAME):
-    if FENAME in [ 'Wyoming' ,
-        'Wyoming/E I 94' , 'Wyoming/US 12' ,
-        'Jefferson' , 'Dearborn' ,
-        'Vernor' , 'Lonyo' ,
-        'Lonyo/E I 94' ,'Springwells' , 
-        'Livernois' , 'Livernois/E I 94' ,
-      'Livernois/S I 75' , 'Dragoon' , 
-      'Dragoon/N I 75' , 'Clark' ,
-       'Clark/N I 75' , 'Clark/S I 75' , 
-       'Grand' , 'Grand River/W I 94' ,
-        'Michigan' , 'Fort', 'Westend' ]:
+    if FENAME in {}:
         return 1
     else:
-        return 0"""
+        return 0""".format(
+        old_truck_route_list
+    )
 
     expression = "getOldTrkRt(!FENAME!)"
     arcpy.CalculateField_management(road, "OldTrkRt", expression, "PYTHON", codeblock)
 
 
-def preprocess_network(road, mask, plaza_mask, output):
+def add_designed_truck_route(road, designed_truck_route_dict):
+    """
+    add designed truck route attribute to the road file 
+    Input: 
+    :road - str - the path of the road file 
+    :design_truck_route_dict - dict - a designed truck route dictionary whose values
+        are the road name list
+    """
+    r = 1
+    for key, item in designed_truck_route_dict.items():
+        if item:
+            arcpy.AddField_management(road, key, "SHORT")
+            codeblock = """
+def getTrkRt(FENAME):
+    if FENAME in {}:
+        return 1
+    else:
+        return 0""".format(
+                designed_truck_route_dict[key]
+            )
+            print(codeblock)
+            expression = "getTrkRt(!FENAME!)"
+            arcpy.CalculateField_management(road, key, expression, "PYTHON", codeblock)
+            r += 1
+        else:
+            continue
+
+
+def preprocess_network(
+    road, old_truck_route_list, designed_truck_route_dict, mask, plaza_mask, output
+):
     """
     Preprocess the network for network building 
     Input: 
     :road - str -       path to the whole road file
+    :old_truck_route_list - str - the road name list **string**
+    :design_truck_route_dict - dict - a designed truck route dictionary whose values
+        are the road name list
     :mask - str -       path to mask of research area 
     :plaza_mast - str - path to the plaza mask 
     :output - str -     path to put the output road file 
-    Output:
-    None 
     """
     # arcpy settings
     env.workspace = config.working_folder
     env.overwriteOutput = True
     env.parallelProcessingFactor = "100%"
+    # check if clipped road exist, if do, pass
     # select road by mask
-    selected_roads = select_network_by_mask(road, mask, plaza_mask, output)
+    current_time = datetime.datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+    if not arcpy.Exists(output):
+        print("Selecting subset of roads...")
+        select_network_by_mask(road, mask, plaza_mask, output)
+        selected_roads = output + current_time
+        arcpy.CopyFeatures_management(output, selected_roads)
+    else:
+        print("Output file exist... reuse the previous output")
+        selected_roads = output + current_time
+        print(selected_roads)
+        arcpy.CopyFeatures_management(output, selected_roads)
     # add fields to the road
     add_time_roadLevel(selected_roads)
-    add_truck_route(selected_roads)
+    add_MDOT_truck_route(selected_roads, old_truck_route_list)
+    add_designed_truck_route(selected_roads, designed_truck_route_dict)
 
