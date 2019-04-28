@@ -58,9 +58,9 @@ def getTime(fcc, length):
     elif digit < 30:
         return ((float(length)/ 5280 )/ 40 )*3600
     elif digit < 40:
-        return ((float(length)/ 5280 )/ 25 )*3600
+        return ((float(length)/ 5280 )/ 12 )*3600
     else:
-        return ((float(length)/ 5280 )/ 20 )*3600"""
+        return ((float(length)/ 5280 )/ 10 )*36000"""
     codeblock2 = """
 def getLevel(fcc):
     digit = int((fcc.strip())[1:])
