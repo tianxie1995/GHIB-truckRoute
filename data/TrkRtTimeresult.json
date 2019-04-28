@@ -1,0 +1,42 @@
+{
+    "Designated Route 1": {
+        "Boasso Global": 332.5699485259212,
+        "Central Transport": 351.71095603030625,
+        "ContainerPort Group Detroit": 302.4171887526482,
+        "Detroit Produce Terminal": 349.9010489620563,
+        "Logistics Insights Inc": 318.22880230988306,
+        "Norfolk Southern": 368.0432088749989,
+        "Renaissance Global Logistics,": 428.1988925380265,
+        "Universal Trucking": 414.78155684499626
+    },
+    "Designated Route 2": {
+        "Boasso Global": 267.01279941986286,
+        "Central Transport": 257.5076723027623,
+        "ContainerPort Group Detroit": 300.3400935533992,
+        "Detroit Produce Terminal": 245.87205392014195,
+        "Logistics Insights Inc": 243.75501505024332,
+        "Norfolk Southern": 217.2392130371616,
+        "Renaissance Global Logistics,": 223.14146796065862,
+        "Universal Trucking": 227.86316023189895
+    },
+    "MDOT Route": {
+        "Boasso Global": 231.0819270116683,
+        "Central Transport": 231.5732878716894,
+        "ContainerPort Group Detroit": 238.3820848828036,
+        "Detroit Produce Terminal": 217.1322726905577,
+        "Logistics Insights Inc": 210.49512176098418,
+        "Norfolk Southern": 197.33418348414975,
+        "Renaissance Global Logistics,": 190.63851632542276,
+        "Universal Trucking": 213.7891074741836
+    },
+    "Original Route": {
+        "Boasso Global": 216.99723751623517,
+        "Central Transport": 213.9240060876908,
+        "ContainerPort Group Detroit": 217.29681071660886,
+        "Detroit Produce Terminal": 191.74674474083477,
+        "Logistics Insights Inc": 206.5604811629024,
+        "Norfolk Southern": 187.65965553032916,
+        "Renaissance Global Logistics,": 179.2274868092107,
+        "Universal Trucking": 197.79972167810348
+    }
+}
